@@ -21,7 +21,10 @@ void funcRandUni(double *arr, int N){
 	  u[i] = gsl_rng_uniform(q);
     memcpy(arr,u,sizeof(u));
   for(size_t i; i<N; i++)
-    arr[i]=arr[i]*(1-arr[i])/acos(1-M_PI*arr[i])/M_PI;
+    arr[i]=acos(1-2*arr[i])/M_PI;
+
+  for(size_t i; i<N; i++)
+    arr[i]=(arr[i]*(1-arr[i]))/(((M_PI/2)*sin(M_PI*arr[i])));
 	// free memory
 	gsl_rng_free(q);
 }
@@ -33,7 +36,7 @@ int N[3]={10,100,1000};
 double Predicted[3];
 //double error[N];
 printf("\n--------------------------------------\n");
-for(size_t i=1; i<2; i++){
+for(size_t i=2; i<3; i++){
   tempSum = 0;
   double *randNums = (double*) malloc(sizeof(double) * N[i]);
   funcRandUni(randNums, N[i]);
