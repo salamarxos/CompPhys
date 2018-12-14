@@ -2,7 +2,7 @@ clear all
 close all
 
 a = 1;
-b = 20;
+b = 40;
 N = 40; % number of cells; N+1 is the number of grid points
 L = b-a; % size of the domain
 h = L/N; % grid spacing
