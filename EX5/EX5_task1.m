@@ -1,42 +1,43 @@
 clear all
 close all
+clc
 
-a = 1;
-b = 40;
-N = 40; % number of cells; N+1 is the number of grid points
-L = b-a; % size of the domain
+xa = 0;
+xb = 20;
+N = 100; % number of cells; N+1 is the number of grid points
+L = xb-xa; % size of the domain
 h = L/N; % grid spacing
-r0 = 5.29;
-x = linspace(a,b,N+1)'; % column vector of grid points
+r0 = 1;
+x = linspace(xa,xb,N+1)'; % column vector of grid points
 
-phi_f = @(x) (1./x)-(1+1./x).*exp(-2.*x);  % inline function for the exact solution
-rho_f = @(x)-((4.*x.*exp(-2.*x./r0))./r0^3); % inline function for the exact right-hand-side
-% rho_f = @(x)(8.*x.*exp((-2.*x).*(r0+x)./r0)./r0^4);
+e=ones(N+1,1);
+A=spdiags([-e,2*e,-e],(-1:1),N+1,N+1);
+A(1,:)=zeros(1,N+1); A(1,1)=1;
+A(N+1,:)=zeros(1,N+1); A(N+1,N+1)=1;
+g = @(x) x.*((1./x)-(1+1./x).*exp(-2.*x));  % inline function for the exact solution
+% g = @(x) (-4.*exp(-2.*x).*x - 2.*exp(-2.*x)-4.*exp(-2.*x).*x.^2-4.*exp(-2.*x).*x.^3+2)./x.^3; 
+%  g = @(x) -4.*exp(-2.*x).*x;
+f = @(x)((4.*x.*exp((-2.*x)./r0))./r0^3); % inline function for the exact right-hand-side
 
-phi_exact = phi_f(x); % exact solution at the grid points
+phi_exact = g(x); % exact solution at the grid points
 
-alpha = phi_f(a); % boundary condition
-beta = phi_f(b); % boundary condition
+ua = 0; % boundary condition
+ub = 1; % boundary condition
 
-rho = rho_f(x(2:N)); % exact rho at the grid points
-rho(1) = rho(1) + alpha/h^2; % add boundary term
-rho(N-1) = rho(N-1) + beta/h^2; % add boundary term
+b=h^2*f(x);
+b(1)=ua; b(end)=ub;
+% for i=2:N
+% b(i) = (f(i+1)-2*f(i)+f(i-1))/h^2; 
+% end
 
-dA = diag( 2*ones(1,N-1) ); % diagonal matrix
-dAp1 = diag( -1*ones(1,N-2), 1 ); % super-diagonal matrix
-dAm1 = diag( -1*ones(1,N-2), -1 ); % sub-diagonal matrix
-A = (dA + dAp1 + dAm1);
-A = A/h^2;
+eigv = eigs(A); % for curiosity, we check the eigenvalues of A
+phi = A\b; % solving the linear system
 
-eigv = eig(A); % for curiosity, we check the eigenvalues of A
-phi = A\rho; % solving the linear system
 
-solver_err = max( abs(A*phi - rho) );% Did the solver do his job?
-
-phi_num = [alpha; phi; beta]; % enlarge the solution vector by the values at the boundary
-
-plot(x,phi_exact,'b-',x,phi_num,'ro-');
-xlim([a b]);
+% plot(x,phi_exact,'b-');
+plot(x,phi_exact,'b-',x,phi,'ro');
+xlim([0 xb]);
+ylim([0 1.2])
 xlabel('r');
 ylabel('\phi(x)');
 legend('exact','numerical','location','northwest');

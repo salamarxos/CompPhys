@@ -7,11 +7,13 @@ b = 3;
 L = b-a; % Interval Length
 N = 100; % No of points
 x = linspace(a,b,N)'; % Coordinate vector
-h = L/N; % Coordinate step
-U = (1./x)-(1+1./x).*exp(-2.*x); 
+h = L/N; % Coordinate step 
 e = ones(N,1); A = spdiags([e -2*e e],[-1 0 1],N,N)/h^2;
 % Total Hamiltonia
-H = -1/2*A + spdiags(U,0,N,N);
+H = -1/2*A;
+for i=1:length(H)
+   H(i,i) 
+end
 % Find lowest nmodes eigenvectors and eigenvalues of sparse matrix
 nmodes = 4; options.disp = 0;
 [V,E] = eigs(H,nmodes,'sa',options); % find eigs

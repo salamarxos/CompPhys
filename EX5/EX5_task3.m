@@ -7,7 +7,7 @@ xb = 20;
 N = 100; % number of cells; N+1 is the number of grid points
 L = xb-xa; % size of the domain
 h = L/N; % grid spacing
-r0 = 5.29;
+r0 = 1;
 x = linspace(xa,xb,N+1)'; % column vector of grid points
 
 e=ones(N+1,1);
@@ -35,7 +35,7 @@ phi = A\b; % solving the linear system
 
 
 % plot(x,phi_exact,'b-');
-plot(x,phi_exact,'b-',x,phi,'ro-');
+plot(x,phi_exact,'b-',x,phi,'ro');
 xlim([0 xb]);
 ylim([0 1.2])
 xlabel('r');
